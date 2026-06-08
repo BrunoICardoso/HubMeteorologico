@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubMeteorologico.API", "HubMeteorologico\HubMeteorologico.API.csproj", "{D0BBF8BA-DD10-4BDC-A3E3-DB16F7878959}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubMeteorologico.Application", "HubMeteorologico.Application\HubMeteorologico.Application.csproj", "{1BEC1830-7925-4401-AC9F-11A912814B79}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubMeteorologico.Domain", "HubMeteorologico.Domain\HubMeteorologico.Domain.csproj", "{B93ECFBD-60D7-440F-8ADA-9633E60C79EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubMeteorologico.Infrastructure", "HubMeteorologico.Infrastructure\HubMeteorologico.Infrastructure.csproj", "{D6C077C7-A27C-4A51-8459-52BA088A4B08}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{69A344AE-A68D-493A-8993-3F0F11164B1E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{4892E2F8-A665-4535-9800-C8705A5B9B26}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D0BBF8BA-DD10-4BDC-A3E3-DB16F7878959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0BBF8BA-DD10-4BDC-A3E3-DB16F7878959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0BBF8BA-DD10-4BDC-A3E3-DB16F7878959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0BBF8BA-DD10-4BDC-A3E3-DB16F7878959}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BEC1830-7925-4401-AC9F-11A912814B79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BEC1830-7925-4401-AC9F-11A912814B79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BEC1830-7925-4401-AC9F-11A912814B79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BEC1830-7925-4401-AC9F-11A912814B79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B93ECFBD-60D7-440F-8ADA-9633E60C79EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B93ECFBD-60D7-440F-8ADA-9633E60C79EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B93ECFBD-60D7-440F-8ADA-9633E60C79EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B93ECFBD-60D7-440F-8ADA-9633E60C79EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6C077C7-A27C-4A51-8459-52BA088A4B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6C077C7-A27C-4A51-8459-52BA088A4B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6C077C7-A27C-4A51-8459-52BA088A4B08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6C077C7-A27C-4A51-8459-52BA088A4B08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69A344AE-A68D-493A-8993-3F0F11164B1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69A344AE-A68D-493A-8993-3F0F11164B1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69A344AE-A68D-493A-8993-3F0F11164B1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69A344AE-A68D-493A-8993-3F0F11164B1E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3FEADBB6-AD59-417C-8FF2-D3C9E50B0DC9}
+	EndGlobalSection
+EndGlobal
