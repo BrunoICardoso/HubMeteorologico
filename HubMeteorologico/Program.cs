@@ -5,14 +5,19 @@ using Serilog;
 using Serilog.Events;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
-using HubMeteorologico.Infrastructure.Messaging;
 using Npgsql;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
-using MotoRental.API.ConfigController;
 using System.Reflection;
+using HubMeteorologico.API.ConfigController;
+using HubMeteorologico.Domain.Interfaces;
+using HubMeteorologico.Domain.Services;
+using HubMeteorologico.Domain.Interfaces.Services;
+using HubMeteorologico.Infrastructure.Repository.Interface;
+using HubMeteorologico.Infrastructure.Repository;
+using HubMeteorologico.API.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +38,6 @@ builder.Host.UseSerilog()
             });
 #endregion
 
-
 #region Configuration of Routes, Controllers and MVC
 builder.Services.AddMvc()
  .AddJsonOptions(options =>
@@ -48,17 +52,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
-#endregion
-
-#region Configuration RabbitMQ
-builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection("RabbitMQ"));
-
-builder.Services.AddSingleton<RabbitMQClient>(sp =>
-{
-    var rabbitMQOptions = sp.GetRequiredService<IOptions<RabbitMQOptions>>().Value;
-    return new RabbitMQClient(rabbitMQOptions.HostName, rabbitMQOptions.UserName, rabbitMQOptions.Password);
-});
-
 #endregion
 
 #region Configuração Context DB
@@ -86,13 +79,13 @@ builder.Services.AddScoped<IDatabaseFactory, DatabaseFactory>();
 builder.Services.AddScoped<IDbSession, DbSession>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-
 #endregion
 
 #region FluentValidation
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddValidatorsFromAssemblyContaining<RegistrosInterpoladosFilterDtoValidator>();
 builder.Services.Configure<ApiBehaviorOptions>(opt =>
 {
     opt.SuppressModelStateInvalidFilter = true;
@@ -101,12 +94,26 @@ builder.Services.Configure<ApiBehaviorOptions>(opt =>
 
 #endregion
 
-#region Services Internal
+#region Redis Cache
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis")
+    ?? throw new InvalidOperationException("Connection string 'Redis' not configured.");
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = redisConnectionString;
+    options.InstanceName = "HubMet:";
+});
 
 #endregion
 
-#region Repositories
+#region Services Internal
+builder.Services.AddScoped<IRegistrosInterpoladosService, RegistrosInterpoladosService>();
+#endregion
 
+#region Repositories
+builder.Services.AddTransient<IRegistrosInterpoladosRepository, RegistrosInterpoladosRepository>();
+builder.Services.AddTransient<IFazendaRepository, FazendaRepository>();
+builder.Services.AddTransient<IMapaFazendaLavouraRepository, MapaFazendaLavouraRepository>();
 #endregion
 
 #region Swagger
@@ -171,14 +178,14 @@ builder.Services.AddSwaggerGen(s =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseMiddleware<MotoRental.API.Middleware.ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();

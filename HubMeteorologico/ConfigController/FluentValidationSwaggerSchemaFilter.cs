@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation.Validators;
 
-namespace MotoRental.API.ConfigController
+namespace HubMeteorologico.API.ConfigController
 {
     public class FluentValidationSwaggerSchemaFilter : ISchemaFilter
     {
@@ -72,13 +72,13 @@ namespace MotoRental.API.ConfigController
 
                     if (hasMinLengthValidator)
                     {
-                        var minLength = validators.OfType<ILengthValidator>().Max(v => v.Min); 
+                        var minLength = validators.OfType<ILengthValidator>().Max(v => v.Min);
                         schema.Properties[matchingPropertyName].MinLength = minLength;
                     }
 
                     if (hasMaxLengthValidator)
                     {
-                        var maxLength = validators.OfType<ILengthValidator>().Min(v => v.Max); 
+                        var maxLength = validators.OfType<ILengthValidator>().Min(v => v.Max);
                         schema.Properties[matchingPropertyName].MaxLength = maxLength;
                     }
 

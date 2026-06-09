@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using HubMeteorologico.Infrastructure.Repository.Settings.Interface;
 using NetTopologySuite.Geometries;
-
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace HubMeteorologico.Infrastructure.Repository.Settings;
 
@@ -250,16 +250,10 @@ public class Repository<TEntity> : RepositoryBase, IRepository<TEntity>
 
     #region Reflection mapping helpers
 
-    private static string GetTableName()
+    private string GetTableName()
     {
-        var type = typeof(TEntity);
-
-        var tableAttr = type.GetCustomAttribute<TableAttribute>();
-        if (tableAttr != null && !string.IsNullOrWhiteSpace(tableAttr.Name))
-            return tableAttr.Name;
-
-        // fallback: nome da classe
-        return type.Name;
+        var tableAttribute = typeof(TEntity).GetCustomAttribute<TableAttribute>();
+        return $"\"{tableAttribute?.Schema ?? "public"}\".\"{tableAttribute?.Name ?? typeof(TEntity).Name}\"";
     }
 
     private static PropertyInfo GetKeyProperty()
@@ -354,7 +348,7 @@ public class Repository<TEntity> : RepositoryBase, IRepository<TEntity>
 
         return new InsertClause
         {
-            Columns = string.Join(", ", cols),
+            Columns = string.Join(", ", cols.Select(p => $"\"{p}\"")),
             Values = string.Join(", ", vals),
             Parameters = dp
         };
@@ -385,8 +379,8 @@ public class Repository<TEntity> : RepositoryBase, IRepository<TEntity>
 
             var col = GetColumnName(p);
             var paramName = p.Name;
-
-            setParts.Add($"{col} = @{paramName}");
+            
+            setParts.Add($"\"{col}\" = @{paramName}");
             
             AddParameter(dp, p, paramName, p.GetValue(entity));
         }
@@ -404,16 +398,18 @@ public class Repository<TEntity> : RepositoryBase, IRepository<TEntity>
         var props = GetMappedProperties(includeKey: true, includeIdentity: true).ToList();
         if (props.Count == 0) return "*";
 
-        return string.Join(", ", props.Select(GetColumnName));
+        return string.Join(", ", (props.Select(GetColumnName)).Select(p => $"\"{p}\""));
     }
 
     private static string BuildSelectClause<TModel>(Expression<Func<TEntity, TModel>> selectExpression)
     {
         var cols = BuildSelectedColumns(selectExpression.Body);
         if (cols.Count == 0)
-            return BuildSelectClause();
+        {
+            return string.Join(", ", BuildSelectClause().Select(p => $"\"{p}\""));
+        }
 
-        return string.Join(", ", cols);
+        return string.Join(", ", cols.Select(p=> $"\"{p}\""));
     }
 
     private static List<string> BuildSelectedColumns(Expression body)
@@ -510,7 +506,7 @@ public class Repository<TEntity> : RepositoryBase, IRepository<TEntity>
                         var left = Visit(be.Left);
                         var right = Visit(be.Right);
                         var op = exp.NodeType == ExpressionType.AndAlso ? "AND" : "OR";
-                        return $"({left} {op} {right})";
+                        return $"(\"{left}\" {op} {right})";
                     }
 
                 case ExpressionType.Equal:
@@ -541,11 +537,10 @@ public class Repository<TEntity> : RepositoryBase, IRepository<TEntity>
                         if (val == null)
                         {
                             return exp.NodeType == ExpressionType.Equal
-                                ? $"{col} IS NULL"
-                                : $"{col} IS NOT NULL";
-                        }
+                                ? $"\"{col}\" IS NULL"
+                                : $"\"{col}\" IS NOT NULL";                        }
 
-                        return $"{col} {op} @{pName}";
+                        return $"\"{col}\" {op} @{pName}";
                     }
 
                 default:

@@ -26,37 +26,14 @@ services:
       - db-data:/var/lib/postgresql/data
     networks:
       - app-network
-
-  rabbitmq:
-    image: "rabbitmq:3-management"
-    environment:
-      RABBITMQ_DEFAULT_USER: "admin"
-      RABBITMQ_DEFAULT_PASS: "65876Df&"
+  
+  redis:
+    image: redis:7-alpine
+    container_name: hubmeteorologico-redis
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "6379:6379"
     networks:
-      - app-network
-
-  # motorental.background:
-  #   image: ${DOCKER_REGISTRY-}motorentalbackground
-  #   build:
-  #     context: .
-  #     dockerfile: MotoRental.Background/Dockerfile
-  #   depends_on:
-  #     - db
-  #     - rabbitmq
-  #   environment:
-  #      ConnectionStrings__ContextBase: Host=db;Database=RentalDB;User Id=postgres;Password=65876Df&;
-  #      FileStorageSettings__BasePath: "/app/documentos/cnh"
-  #      RabbitMQ__HostName: rabbitmq
-  #      RabbitMQ__UserName: admin
-  #      RabbitMQ__Password: 65876Df&
-  #      JwtSettings__SecretKey: "XGpLH1yanOi4w3MeodcweDMtKqgu0m7I"
-  #      JwtSettings__Issuer: "MotoRentalIssuer"
-  #      JwtSettings__Audience: "MotoRentalAudience"
-  #   networks:
-  #     - app-network
+      - app-network    
 
 volumes:
   db-data:

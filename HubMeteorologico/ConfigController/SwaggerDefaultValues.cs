@@ -4,11 +4,11 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace MotoRental.API.ConfigController
+namespace HubMeteorologico.API.ConfigController
 {
     public class SwaggerDefaultValues : IOperationFilter
     {
-        
+
         private bool IsEndpointDeprecated(ApiDescription apiDescription)
         {
             if (apiDescription.ActionDescriptor is ControllerActionDescriptor descriptor)
@@ -20,7 +20,7 @@ namespace MotoRental.API.ConfigController
             return false;
         }
 
-        
+
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var apiDescription = context.ApiDescription;

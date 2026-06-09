@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HubMeteorologico.Domain\HubMeteorologico.Domain.csproj" />
     <ProjectReference Include="..\HubMeteorologico.Infrastructure\HubMeteorologico.Infrastructure.csproj" />
   </ItemGroup>
 

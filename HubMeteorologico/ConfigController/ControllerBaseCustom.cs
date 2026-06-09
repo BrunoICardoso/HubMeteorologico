@@ -1,7 +1,7 @@
 ﻿using HubMeteorologico.Domain.ResponseDefault;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MotoRental.API.ConfigController
+namespace HubMeteorologico.API.ConfigController
 {
     public class ControllerBaseCustom : ControllerBase
     {
