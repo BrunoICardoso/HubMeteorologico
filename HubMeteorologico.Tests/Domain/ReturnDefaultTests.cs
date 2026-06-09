@@ -1,5 +1,6 @@
 using System.Net;
 using HubMeteorologico.Domain.ResponseDefault;
+using Xunit;
 
 namespace HubMeteorologico.Tests.Domain;
 

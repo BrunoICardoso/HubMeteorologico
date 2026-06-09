@@ -1,4 +1,5 @@
 using HubMeteorologico.Domain.Entities;
+using Xunit;
 
 namespace HubMeteorologico.Tests.Domain;
 

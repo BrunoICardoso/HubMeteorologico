@@ -1,12 +1,14 @@
 using System.Net;
 using System.Text.Json;
 using HubMeteorologico.Domain.DTOs.RegistrosInterpolados;
+using HubMeteorologico.Domain.Entities;
 using HubMeteorologico.Domain.Interfaces.Services;
 using HubMeteorologico.Domain.Services;
 using HubMeteorologico.Infrastructure.Repository.Interface;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Xunit;
 
 namespace HubMeteorologico.Tests.Services;
 
@@ -46,7 +48,7 @@ public class RegistrosInterpoladosServiceTests
         };
 
         _fazendaRepositoryMock
-            .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Domain.Entities.Fazendas, bool>>>()))
+            .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Fazendas, bool>>>()))
             .ReturnsAsync(false);
 
         var result = await _service.GetAsync(filter);
@@ -66,7 +68,7 @@ public class RegistrosInterpoladosServiceTests
         };
 
         _fazendaRepositoryMock
-            .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Domain.Entities.Fazendas, bool>>>()))
+            .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Fazendas, bool>>>()))
             .ReturnsAsync(true);
 
         _fazendaRepositoryMock
@@ -95,7 +97,7 @@ public class RegistrosInterpoladosServiceTests
         };
 
         _fazendaRepositoryMock
-            .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Domain.Entities.Fazendas, bool>>>()))
+            .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Fazendas, bool>>>()))
             .ReturnsAsync(true);
 
         _fazendaRepositoryMock
@@ -130,7 +132,7 @@ public class RegistrosInterpoladosServiceTests
         };
 
         _fazendaRepositoryMock
-            .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Domain.Entities.Fazendas, bool>>>()))
+            .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Fazendas, bool>>>()))
             .ReturnsAsync(true);
 
         _fazendaRepositoryMock
@@ -168,7 +170,7 @@ public class RegistrosInterpoladosServiceTests
         };
 
         _fazendaRepositoryMock
-            .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Domain.Entities.Fazendas, bool>>>()))
+            .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Fazendas, bool>>>()))
             .ReturnsAsync(true);
 
         _fazendaRepositoryMock
