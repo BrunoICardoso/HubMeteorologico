@@ -18,6 +18,9 @@ using HubMeteorologico.Domain.Interfaces.Services;
 using HubMeteorologico.Infrastructure.Repository.Interface;
 using HubMeteorologico.Infrastructure.Repository;
 using HubMeteorologico.API.Validators;
+using HubMeteorologico.Domain.Services.Ingestion;
+using HubMeteorologico.Infrastructure.Queue;
+using HubMeteorologico.API.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,7 +57,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 #endregion
 
-#region ConfiguraÁ„o Context DB
+builder.Services.Configure<IngestionWorkerOptions>(builder.Configuration.GetSection("IngestionWorker"));
+builder.Services.AddScoped<IMeteorologicalIngestionService, MeteorologicalIngestionService>();
+builder.Services.AddScoped<IExternalMeteorologicalProvider, SimulatedExternalMeteorologicalProvider>();
+builder.Services.AddScoped<IInterpolationService, InterpolationService>();
+builder.Services.AddSingleton<IInterpolationQueue, ChannelInterpolationQueue>();
+
+var ingestionWorkerEnabled = builder.Configuration.GetValue<bool>("IngestionWorker:Enabled");
+if (ingestionWorkerEnabled)
+{
+    builder.Services.AddHostedService<MeteorologicalIngestionWorker>();
+    builder.Services.AddHostedService<InterpolationWorker>();
+}
+builder.Services.AddTransient<IRegistrosMeteorologicosRepository, RegistrosMeteorologicosRepository>();
+#region Configura√ß√£o Context DB
 
 builder.Services.AddOptions();
 builder.Services.Configure<DataSettings>(builder.Configuration.GetSection("ConnectionStrings"));
@@ -64,7 +80,7 @@ builder.Services.AddSingleton<NpgsqlDataSource>(sp =>
     var settings = sp.GetRequiredService<IOptions<DataSettings>>().Value;
 
     if (string.IsNullOrWhiteSpace(settings.ContextBase))
-        throw new InvalidOperationException("Connection string (ConnectionStrings:ContextBase) n„o configurada.");
+        throw new InvalidOperationException("Connection string (ConnectionStrings:ContextBase) n√£o configurada.");
 
     var dataSourceBuilder = new NpgsqlDataSourceBuilder(settings.ContextBase);
 

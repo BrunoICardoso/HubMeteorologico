@@ -24,10 +24,12 @@ public class RegistrosInterpoladosController : ControllerBaseCustom
     /// <param name="codigoLavoura">Código da lavoura (opcional — omitir retorna todas as lavouras)</param>
     /// <param name="dataHora">Data/hora cheia no formato ISO 8601 (ex: 2024-01-15T12:00:00Z)</param>
     [HttpGet]
-    [ProducesResponseType(typeof(ReturnDefault<IEnumerable<RegistrosInterpoladosDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ReturnDefault<IReadOnlyCollection<RegistrosInterpoladosDto>>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ReturnDefault), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ReturnDefault<IEnumerable<RegistrosInterpoladosDto>>>> Get([FromQuery]RegistrosInterpoladosFilterDto filter)
+    public async Task<ActionResult<ReturnDefault<IReadOnlyCollection<RegistrosInterpoladosDto>>>> Get(
+        [FromQuery] RegistrosInterpoladosFilterDto filter,
+        CancellationToken cancellationToken)
     {
-        return StatusCode (await _service.GetAsync(filter));
+        return StatusCode(await _service.GetAsync(filter, cancellationToken));
     }
 }

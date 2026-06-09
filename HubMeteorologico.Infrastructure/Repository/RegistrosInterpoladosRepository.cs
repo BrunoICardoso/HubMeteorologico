@@ -10,7 +10,9 @@ public class RegistrosInterpoladosRepository : Repository<RegistrosInterpolados>
 {
     public RegistrosInterpoladosRepository(IDbSession session) : base(session) { }
 
-    public async Task<IEnumerable<RegistrosInterpoladosDto>> GetByFilterAsync(RegistrosInterpoladosFilterDto filter)
+    public async Task<IEnumerable<RegistrosInterpoladosDto>> GetByFilterAsync(
+        RegistrosInterpoladosFilterDto filter,
+        CancellationToken cancellationToken = default)
     {
         // DataHora is stored as "hora cheia" — match exact timestamp
         // CodigoLavoura is optional; when supplied we join MapaFazendaLavoura to filter
@@ -53,11 +55,15 @@ public class RegistrosInterpoladosRepository : Repository<RegistrosInterpolados>
 
         var sql = string.Format(baseSql, lavouraClause);
 
-        return await Conn.QueryAsync<RegistrosInterpoladosDto>(sql, new
-        {
-            filter.FazendaId,
-            filter.DataHora,
-            filter.CodigoLavoura
-        }, transaction: Tx(false));
+        return await Conn.QueryAsync<RegistrosInterpoladosDto>(new CommandDefinition(
+            sql,
+            new
+            {
+                filter.FazendaId,
+                filter.DataHora,
+                CodigoLavoura = filter.CodigoLavoura?.Trim()
+            },
+            transaction: Tx(false),
+            cancellationToken: cancellationToken));
     }
 }

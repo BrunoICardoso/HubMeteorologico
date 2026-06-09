@@ -6,5 +6,5 @@ namespace HubMeteorologico.Domain.Interfaces.Services;
 
 public interface IFazendaRepository : IRepository<Fazendas>
 {
-    Task<bool> LavouraExistsInFazendaAsync(int fazendaId, string codigoLavoura);
+    Task<bool> LavouraExistsInFazendaAsync(int fazendaId, string codigoLavoura, CancellationToken cancellationToken = default);
 }

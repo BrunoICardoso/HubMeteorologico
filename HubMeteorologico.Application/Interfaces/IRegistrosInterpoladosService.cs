@@ -5,5 +5,5 @@ namespace HubMeteorologico.Domain.Interfaces;
 
 public interface IRegistrosInterpoladosService
 {
-    Task<ReturnDefault<IEnumerable<RegistrosInterpoladosDto>>> GetAsync(RegistrosInterpoladosFilterDto filter);
+    Task<ReturnDefault<IReadOnlyCollection<RegistrosInterpoladosDto>>> GetAsync(RegistrosInterpoladosFilterDto filter, CancellationToken cancellationToken = default);
 }

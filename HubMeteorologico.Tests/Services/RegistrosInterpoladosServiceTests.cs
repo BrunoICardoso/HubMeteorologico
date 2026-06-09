@@ -16,7 +16,6 @@ public class RegistrosInterpoladosServiceTests
 {
     private readonly Mock<IRegistrosInterpoladosRepository> _repositoryMock;
     private readonly Mock<IFazendaRepository> _fazendaRepositoryMock;
-    private readonly Mock<IMapaFazendaLavouraRepository> _mapaFazendaLavouraRepositoryMock;
     private readonly Mock<IDistributedCache> _cacheMock;
     private readonly Mock<ILogger<RegistrosInterpoladosService>> _loggerMock;
     private readonly RegistrosInterpoladosService _service;
@@ -25,14 +24,12 @@ public class RegistrosInterpoladosServiceTests
     {
         _repositoryMock = new Mock<IRegistrosInterpoladosRepository>();
         _fazendaRepositoryMock = new Mock<IFazendaRepository>();
-        _mapaFazendaLavouraRepositoryMock = new Mock<IMapaFazendaLavouraRepository>();
         _cacheMock = new Mock<IDistributedCache>();
         _loggerMock = new Mock<ILogger<RegistrosInterpoladosService>>();
 
         _service = new RegistrosInterpoladosService(
             _repositoryMock.Object,
             _fazendaRepositoryMock.Object,
-            _mapaFazendaLavouraRepositoryMock.Object,
             _cacheMock.Object,
             _loggerMock.Object);
     }
@@ -72,7 +69,7 @@ public class RegistrosInterpoladosServiceTests
             .ReturnsAsync(true);
 
         _fazendaRepositoryMock
-            .Setup(r => r.LavouraExistsInFazendaAsync(filter.FazendaId, filter.CodigoLavoura))
+            .Setup(r => r.LavouraExistsInFazendaAsync(filter.FazendaId, filter.CodigoLavoura, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
         var result = await _service.GetAsync(filter);
@@ -101,7 +98,7 @@ public class RegistrosInterpoladosServiceTests
             .ReturnsAsync(true);
 
         _fazendaRepositoryMock
-            .Setup(r => r.LavouraExistsInFazendaAsync(filter.FazendaId, filter.CodigoLavoura))
+            .Setup(r => r.LavouraExistsInFazendaAsync(filter.FazendaId, filter.CodigoLavoura, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
         var serialized = System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(cachedData));
@@ -113,7 +110,7 @@ public class RegistrosInterpoladosServiceTests
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         Assert.NotNull(result.Data);
-        _repositoryMock.Verify(r => r.GetByFilterAsync(It.IsAny<RegistrosInterpoladosFilterDto>()), Times.Never);
+        _repositoryMock.Verify(r => r.GetByFilterAsync(It.IsAny<RegistrosInterpoladosFilterDto>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -136,7 +133,7 @@ public class RegistrosInterpoladosServiceTests
             .ReturnsAsync(true);
 
         _fazendaRepositoryMock
-            .Setup(r => r.LavouraExistsInFazendaAsync(filter.FazendaId, filter.CodigoLavoura))
+            .Setup(r => r.LavouraExistsInFazendaAsync(filter.FazendaId, filter.CodigoLavoura, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
         _cacheMock
@@ -144,14 +141,14 @@ public class RegistrosInterpoladosServiceTests
             .ReturnsAsync((byte[]?)null);
 
         _repositoryMock
-            .Setup(r => r.GetByFilterAsync(filter))
+            .Setup(r => r.GetByFilterAsync(filter, It.IsAny<CancellationToken>()))
             .ReturnsAsync(dbData);
 
         var result = await _service.GetAsync(filter);
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         Assert.NotNull(result.Data);
-        _repositoryMock.Verify(r => r.GetByFilterAsync(filter), Times.Once);
+        _repositoryMock.Verify(r => r.GetByFilterAsync(filter, It.IsAny<CancellationToken>()), Times.Once);
         _cacheMock.Verify(c => c.SetAsync(
             It.IsAny<string>(),
             It.IsAny<byte[]>(),
@@ -173,21 +170,20 @@ public class RegistrosInterpoladosServiceTests
             .Setup(r => r.AnyAsync(It.IsAny<System.Linq.Expressions.Expression<Func<Fazendas, bool>>>()))
             .ReturnsAsync(true);
 
-        _fazendaRepositoryMock
-            .Setup(r => r.LavouraExistsInFazendaAsync(filter.FazendaId, filter.CodigoLavoura!))
-            .ReturnsAsync(true);
-
         _cacheMock
             .Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((byte[]?)null);
 
         _repositoryMock
-            .Setup(r => r.GetByFilterAsync(filter))
+            .Setup(r => r.GetByFilterAsync(filter, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Enumerable.Empty<RegistrosInterpoladosDto>());
 
         var result = await _service.GetAsync(filter);
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        _fazendaRepositoryMock.Verify(
+            r => r.LavouraExistsInFazendaAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Never);
 
         _cacheMock.Verify(c => c.SetAsync(
             It.Is<string>(k => k.Contains(":lall:")),

@@ -9,7 +9,10 @@ public class FazendaRepository : Repository<Fazendas>, IFazendaRepository
 {
     public FazendaRepository(IDbSession session) : base(session) { }
 
-    public async Task<bool> LavouraExistsInFazendaAsync(int fazendaId, string codigoLavoura)
+    public async Task<bool> LavouraExistsInFazendaAsync(
+        int fazendaId,
+        string codigoLavoura,
+        CancellationToken cancellationToken = default)
     {
         const string sql = @"
             SELECT EXISTS (
@@ -19,6 +22,10 @@ public class FazendaRepository : Repository<Fazendas>, IFazendaRepository
                 WHERE mf.""FazendaId"" = @FazendaId
                   AND mfl.""CodigoLavoura"" = @CodigoLavoura
             );";
-        return await Conn.ExecuteScalarAsync<bool>(sql, new { FazendaId = fazendaId, CodigoLavoura = codigoLavoura }, transaction: Tx(false));
+        return await Conn.ExecuteScalarAsync<bool>(new CommandDefinition(
+            sql,
+            new { FazendaId = fazendaId, CodigoLavoura = codigoLavoura },
+            transaction: Tx(false),
+            cancellationToken: cancellationToken));
     }
 }

@@ -12,7 +12,8 @@ public class RegistrosInterpoladosFilterDtoValidator : AbstractValidatorCustom<R
             .GreaterThan(0).WithMessage("FazendaId deve ser maior que zero.");
 
         RuleFor(x => x.CodigoLavoura)
-        .NotEmpty().WithMessage("Codigo da Lavoura é obrigatória.");
+            .MaximumLength(100).WithMessage("Codigo da Lavoura deve ter no máximo 100 caracteres.")
+            .When(x => !string.IsNullOrWhiteSpace(x.CodigoLavoura));
 
 
         RuleFor(x => x.DataHora)
